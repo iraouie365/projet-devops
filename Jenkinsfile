@@ -12,22 +12,22 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Construction de l image Docker...'
-                bat 'docker build -t projet-devops-app .'
+                sh 'docker build -t projet-devops-app .'
             }
         }
 
-        stage('Run Docker Compose') {
+        stage('Deploy with Docker Compose') {
             steps {
-                echo 'Déploiement local avec Docker Compose...'
-                bat 'docker compose down'
-                bat 'docker compose up -d --build'
+                echo 'Déploiement avec Docker Compose...'
+                sh 'docker compose down'
+                sh 'docker compose up -d --build'
             }
         }
 
-        stage('Test Containers') {
+        stage('Check Containers') {
             steps {
                 echo 'Vérification des conteneurs...'
-                bat 'docker ps'
+                sh 'docker ps'
             }
         }
     }
