@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: projet-devops-app
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_NAME: gestion_besoins
+      DB_USER: iraoui
+      DB_PASSWORD: iraoui0101
+
+  db:
+    image: mysql:8.0
+    container_name: projet-devops-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gestion_besoins
+      MYSQL_USER: iraoui
+      MYSQL_PASSWORD: iraoui0101
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: projet-devops-phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    depends_on:
+      - db
+
+volumes:
+  db_data:
