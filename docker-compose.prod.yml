@@ -1,0 +1,42 @@
+services:
+  app:
+    image: iraoui9/projet-devops:latest
+    container_name: projet-devops-app
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: gestion_besoins
+      DB_USER: iraoui
+      DB_PASSWORD: iraoui0101
+
+  db:
+    image: mysql:8.0
+    container_name: projet-devops-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gestion_besoins
+      MYSQL_USER: iraoui
+      MYSQL_PASSWORD: iraoui0101
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: projet-devops-phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    depends_on:
+      - db
+
+volumes:
+  db_data:
