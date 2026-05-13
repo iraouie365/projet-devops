@@ -1,0 +1,47 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Environment / secrets
+.env
+.env.local
+.env.*
+config/*.env
+config/*secret*
+config/*password*
+config/*credential*
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build / cache
+dist/
+build/
+.cache/
+tmp/
+temp/
+
+# PHP / Composer
+composer.phar
+composer.lock
+
+# Uploads - fichiers uploadés par les utilisateurs
+uploads/*
+!uploads/.gitkeep
+
+# XAMPP / local files
+*.sql.gz
+*.zip
+*.rar
+*.bak
+*.backup
+
+# Docker local override
+docker-compose.override.yml
