@@ -19,8 +19,8 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 echo 'Déploiement avec Docker Compose...'
-                sh 'docker compose down'
-                sh 'docker compose up -d --build'
+                sh 'docker compose -p projet-devops down --remove-orphans'
+                sh 'docker compose -p projet-devops up -d --build'
             }
         }
 
