@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'iraoui9/projet-devops:latest'
+        AWS_SERVER = '13.60.92.175'
+        AWS_USER = 'ec2-user'
     }
 
     stages {
@@ -40,25 +42,41 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Deploy to AWS EC2') {
             steps {
-                echo 'Déploiement local avec Docker Compose...'
-                sh 'docker compose -p projet-devops down --remove-orphans'
-                sh 'docker compose -p projet-devops up -d --build'
+                echo 'Déploiement sur le serveur AWS EC2...'
+
+                sshagent(credentials: ['aws-ec2-ssh']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
+                            cd ~/projet-devops &&
+                            git pull origin main &&
+                            sudo docker compose -f docker-compose.prod.yml pull &&
+                            sudo docker compose -f docker-compose.prod.yml up -d
+                        "
+                    '''
+                }
             }
         }
 
-        stage('Check Containers') {
+        stage('Check AWS Containers') {
             steps {
-                echo 'Vérification des conteneurs...'
-                sh 'docker ps'
+                echo 'Vérification des conteneurs sur AWS...'
+
+                sshagent(credentials: ['aws-ec2-ssh']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
+                            sudo docker ps
+                        "
+                    '''
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline terminé avec succès.'
+            echo 'Pipeline terminé avec succès. Application déployée sur AWS.'
         }
 
         failure {
