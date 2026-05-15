@@ -4,7 +4,7 @@ services:
     container_name: projet-devops-app
     restart: always
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - db
     environment:
