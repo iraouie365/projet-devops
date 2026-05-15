@@ -17,7 +17,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo 'Construction de l image Docker sans cache...'
+                echo 'Construction de l image Docker...'
                 sh 'docker build --no-cache -t $DOCKER_IMAGE .'
             }
         }
@@ -42,33 +42,38 @@ pipeline {
             }
         }
 
-        stage('Deploy to AWS EC2') {
+        stage('Deploy to Kubernetes on AWS EC2') {
             steps {
-                echo 'Déploiement sur le serveur AWS EC2...'
+                echo 'Déploiement Kubernetes sur AWS EC2...'
 
                 sshagent(credentials: ['aws-ec2-ssh']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
                             cd ~/projet-devops &&
                             git pull origin main &&
-                            sudo docker compose -f docker-compose.prod.yml down &&
-                            sudo docker pull iraoui9/projet-devops:latest &&
-                            sudo docker compose -f docker-compose.prod.yml up -d --force-recreate &&
-                            sudo docker ps
+                            export KUBECONFIG=$HOME/.kube/config &&
+                            kubectl apply -f k8s/ &&
+                            kubectl rollout restart deployment/projet-devops-app &&
+                            kubectl rollout status deployment/projet-devops-app &&
+                            kubectl get pods &&
+                            kubectl get svc
                         "
                     '''
                 }
             }
         }
 
-        stage('Check App Files') {
+        stage('Check Kubernetes Resources') {
             steps {
-                echo 'Vérification des fichiers dans le conteneur app...'
+                echo 'Vérification des ressources Kubernetes...'
 
                 sshagent(credentials: ['aws-ec2-ssh']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
-                            sudo docker exec projet-devops-app ls -la /var/www/html
+                            export KUBECONFIG=$HOME/.kube/config &&
+                            kubectl get nodes &&
+                            kubectl get pods &&
+                            kubectl get svc
                         "
                     '''
                 }
@@ -78,7 +83,7 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline terminé avec succès. Application déployée sur AWS.'
+            echo 'Pipeline terminé avec succès. Application déployée sur Kubernetes.'
         }
 
         failure {
