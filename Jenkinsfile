@@ -51,7 +51,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
                             cd ~/projet-devops &&
                             git pull origin main &&
-                            export KUBECONFIG=$HOME/.kube/config &&
+                            export KUBECONFIG=/home/ec2-user/.kube/config &&
                             kubectl apply -f k8s/ &&
                             kubectl rollout restart deployment/projet-devops-app &&
                             kubectl rollout status deployment/projet-devops-app &&
@@ -70,7 +70,7 @@ pipeline {
                 sshagent(credentials: ['aws-ec2-ssh']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
-                            export KUBECONFIG=$HOME/.kube/config &&
+                            export KUBECONFIG=/home/ec2-user/.kube/config &&
                             kubectl get nodes &&
                             kubectl get pods &&
                             kubectl get svc
