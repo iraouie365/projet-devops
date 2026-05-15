@@ -17,8 +17,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo 'Construction de l image Docker...'
-                sh 'docker build -t $DOCKER_IMAGE .'
+                echo 'Construction de l image Docker sans cache...'
+                sh 'docker build --no-cache -t $DOCKER_IMAGE .'
             }
         }
 
@@ -51,22 +51,24 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
                             cd ~/projet-devops &&
                             git pull origin main &&
-                            sudo docker compose -f docker-compose.prod.yml pull &&
-                            sudo docker compose -f docker-compose.prod.yml up -d
+                            sudo docker compose -f docker-compose.prod.yml down &&
+                            sudo docker pull iraoui9/projet-devops:latest &&
+                            sudo docker compose -f docker-compose.prod.yml up -d --force-recreate &&
+                            sudo docker ps
                         "
                     '''
                 }
             }
         }
 
-        stage('Check AWS Containers') {
+        stage('Check App Files') {
             steps {
-                echo 'Vérification des conteneurs sur AWS...'
+                echo 'Vérification des fichiers dans le conteneur app...'
 
                 sshagent(credentials: ['aws-ec2-ssh']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $AWS_USER@$AWS_SERVER "
-                            sudo docker ps
+                            sudo docker exec projet-devops-app ls -la /var/www/html
                         "
                     '''
                 }
