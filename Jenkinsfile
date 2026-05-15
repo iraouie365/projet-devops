@@ -52,7 +52,20 @@ pipeline {
                             cd ~/projet-devops &&
                             git pull origin main &&
                             export KUBECONFIG=/home/ec2-user/.kube/config &&
-                            kubectl apply -f k8s/ &&
+
+                            kubectl apply -f k8s/mysql-secret.yaml &&
+
+                            if kubectl get pvc mysql-pvc; then
+                                echo 'PVC mysql-pvc existe déjà, on ne le modifie pas.'
+                            else
+                                kubectl apply -f k8s/mysql-pvc.yaml
+                            fi &&
+
+                            kubectl apply -f k8s/mysql-deployment.yaml &&
+                            kubectl apply -f k8s/mysql-service.yaml &&
+                            kubectl apply -f k8s/app-deployment.yaml &&
+                            kubectl apply -f k8s/app-service.yaml &&
+
                             kubectl rollout restart deployment/projet-devops-app &&
                             kubectl rollout status deployment/projet-devops-app &&
                             kubectl get pods &&
