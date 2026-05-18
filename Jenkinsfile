@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'iraoui9/projet-devops:latest'
-        AWS_SERVER = '51.21.180.168'
+        AWS_SERVER = '13.61.7.178'
         AWS_USER = 'ec2-user'
     }
 
