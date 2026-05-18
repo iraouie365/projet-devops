@@ -46,8 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       align-items: center;
       justify-content: center;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
-    }
+      overflow:    }
     
     /* Animated Background */
     .bg-animation {
@@ -372,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="login-logo">
         <i class="bi bi-shield-lock-fill"></i>
       </div>
-      <h2>Gestion des Besoins</h2>
+      <h2>Gestion des Besoins 3</h2>
       <p>Connectez-vous à votre compte</p>
     </div>
     <div class="login-body">
